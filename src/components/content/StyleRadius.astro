@@ -1,0 +1,57 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Custom property name, without the leading dashes. */
+  token: string;
+}
+
+const { render = true, token, class: className, ...rest } = Astro.props;
+---
+
+{
+  render && token && (
+    <div class:list={["radius_wrap", className]} {...rest}>
+      <div class="radius_sample" style={`--_radius: var(--${token});`} />
+      <p class="radius_name text-style-small">--{token}</p>
+      <p class="radius_value text-style-small" />
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .radius_wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-1);
+      text-align: start;
+
+      .radius_sample {
+        aspect-ratio: 3 / 2;
+        background-color: var(--background-2);
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--_radius);
+      }
+      .radius_value {
+        color: var(--text-2);
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+</style>
+
+<script>
+  for (const radius of document.querySelectorAll(".radius_wrap")) {
+    const sample = radius.querySelector(".radius_sample");
+    const value = radius.querySelector(".radius_value");
+    if (!sample || !value) continue;
+    const px = parseFloat(getComputedStyle(sample).borderTopLeftRadius);
+    const rem =
+      px / parseFloat(getComputedStyle(document.documentElement).fontSize);
+    value.textContent = `${Math.round(px * 100) / 100}px · ${Math.round(rem * 1000) / 1000}rem`;
+  }
+</script>

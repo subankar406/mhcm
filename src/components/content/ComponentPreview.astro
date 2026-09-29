@@ -1,0 +1,66 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Page to show inside the frame. */
+  src: string;
+  /** Accessible title for the frame. */
+  title: string;
+  /** Frame width. */
+  variant?: "full" | "mobile";
+  /**
+   * Frame height in rem.
+   *
+   * @min 1
+   */
+  height?: number;
+}
+
+const {
+  render = true,
+  src,
+  title,
+  variant = "full",
+  height = 18,
+  class: className,
+  ...rest
+} = Astro.props;
+---
+
+{
+  render && src && (
+    <div
+      class:list={["preview_wrap", variant !== "full" && variant, className]}
+      style={`--_height: ${height}rem;`}
+      {...rest}
+    >
+      <iframe class="preview_frame" src={src} title={title} loading="lazy" />
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .preview_wrap {
+      width: 100%;
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius-main);
+      overflow: clip;
+      background-color: var(--background-2);
+
+      &.mobile {
+        width: 23.4375rem;
+        max-width: 100%;
+      }
+      .preview_frame {
+        display: block;
+        width: 100%;
+        height: var(--_height);
+        border: 0;
+        color-scheme: normal;
+      }
+    }
+  }
+</style>

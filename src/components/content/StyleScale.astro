@@ -1,0 +1,91 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Custom property name, without the leading dashes. */
+  token: string;
+}
+
+const { render = true, token, class: className, ...rest } = Astro.props;
+---
+
+{
+  render && token && (
+    <div
+      class:list={["scale_wrap", className]}
+      style={`--_size: var(--${token});`}
+      {...rest}
+    >
+      <div class="scale_head">
+        <p class="scale_name text-style-small">--{token}</p>
+        <p class="scale_value text-style-small" />
+      </div>
+      <div class="scale_track">
+        <div class="scale_bar" />
+        <div class="scale_probe" aria-hidden="true" />
+      </div>
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .scale_wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-1);
+
+      .scale_head {
+        display: flex;
+        flex-flow: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+      .scale_value {
+        color: var(--text-2);
+        font-variant-numeric: tabular-nums;
+      }
+      .scale_track {
+        width: 100%;
+        position: relative;
+      }
+      .scale_bar {
+        width: min(var(--_size), 100%);
+        height: var(--space-3);
+        background-color: var(--heading-accent);
+        border-radius: var(--radius-round);
+      }
+      .scale_probe {
+        width: var(--_size);
+        height: 0;
+        position: absolute;
+        inset: 0 auto auto 0;
+        visibility: hidden;
+        pointer-events: none;
+      }
+    }
+  }
+</style>
+
+<script>
+  const scales = document.querySelectorAll(".scale_wrap");
+
+  const measure = () => {
+    for (const scale of scales) {
+      const probe = scale.querySelector(".scale_probe");
+      const value = scale.querySelector(".scale_value");
+      if (!probe || !value) continue;
+      const px = probe.getBoundingClientRect().width;
+      const rem =
+        px / parseFloat(getComputedStyle(document.documentElement).fontSize);
+      value.textContent = `${Math.round(px * 100) / 100}px · ${Math.round(rem * 1000) / 1000}rem`;
+    }
+  };
+
+  measure();
+  addEventListener("resize", measure, { passive: true });
+</script>

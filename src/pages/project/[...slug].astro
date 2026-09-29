@@ -1,0 +1,124 @@
+---
+import { getCollection, getEntry, render } from "astro:content";
+import Layout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import ContentWrapper from "@/components/wrapper/ContentWrapper.astro";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import RichText from "@/components/typography/RichText.astro";
+import Grid from "@/components/wrapper/Grid.astro";
+import Img from "@/components/media/Img.astro";
+import { renderRichText } from "@/utils/markdown.ts";
+
+export async function getStaticPaths() {
+  const projects = await getCollection("projects");
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { Content } = await render(project);
+const data = project.data;
+
+const industries = await Promise.all(
+  data.relatedIndustries.map((ref) => getEntry(ref)),
+);
+const services = await Promise.all(
+  data.relatedServices.map((ref) => getEntry(ref)),
+);
+
+const sections = await Promise.all(
+  (
+    [
+      ["Challenges", data.challenges],
+      ["Strategy", data.strategy],
+      ["Execution", data.execution],
+      ["Result", data.result],
+    ] as const
+  ).map(async ([title, body]) => ({ title, html: await renderRichText(body) })),
+);
+
+const labelHtml = await renderRichText(data.label);
+---
+
+<Layout title={data.title} description={data.subtitle} theme="dark">
+  <!-- header -->
+  <Section paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>{data.status}</Eyebrow>
+      <Heading tag="h1" variant="h2" maxWidth={24}>{data.title}</Heading>
+      <Paragraph render={!!data.subtitle} variant="large" maxWidth={60}>
+        {data.subtitle}
+      </Paragraph>
+      <Paragraph variant="large">{data.location}</Paragraph>
+      <RichText render={!!labelHtml} set:html={labelHtml} />
+    </ContentWrapper>
+    <Img src={data.mainImage} alt="" />
+  </Section>
+  <!-- about -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Heading tag="h2" variant="h3">About the project</Heading>
+      <RichText>
+        <Content />
+      </RichText>
+    </ContentWrapper>
+  </Section>
+  <!-- narrative -->
+  {
+    sections.some((section) => section.html) && (
+      <Section paddingTop="small" paddingBottom="small">
+        <Grid variant="columns" medium={2}>
+          {sections
+            .filter((section) => section.html)
+            .map((section) => (
+              <ContentWrapper>
+                <Heading tag="h2" variant="h4">
+                  {section.title}
+                </Heading>
+                <RichText set:html={section.html} />
+              </ContentWrapper>
+            ))}
+        </Grid>
+      </Section>
+    )
+  }
+  <!-- gallery -->
+  <Section
+    render={data.gallery.length > 0}
+    paddingTop="small"
+    paddingBottom="small"
+  >
+    <Heading tag="h2" variant="h3">Gallery</Heading>
+    <Grid variant="autofit" minColumnWidth={18}>
+      {data.gallery.map((src) => <Img src={src} alt="" />)}
+    </Grid>
+  </Section>
+  <!-- taxonomy -->
+  <Section paddingTop="small">
+    <ContentWrapper>
+      <Heading render={industries.length > 0} tag="h2" variant="h5">
+        Industries
+      </Heading>
+      <Paragraph render={industries.length > 0}>
+        {industries.map((entry) => entry?.data.title).join(" · ")}
+      </Paragraph>
+      <Heading render={services.length > 0} tag="h2" variant="h5">
+        Services
+      </Heading>
+      <Paragraph render={services.length > 0}>
+        {
+          services.map((entry, index) => (
+            <Fragment>
+              {index > 0 && " · "}
+              <a href={entry?.data.path}>{entry?.data.title}</a>
+            </Fragment>
+          ))
+        }
+      </Paragraph>
+    </ContentWrapper>
+  </Section>
+</Layout>

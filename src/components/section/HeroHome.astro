@@ -1,0 +1,74 @@
+---
+import type { ComponentProps } from "astro/types";
+import Section from "@/components/wrapper/Section.astro";
+import Heading from "@/components/typography/Heading.astro";
+import ButtonWrapper from "@/components/wrapper/ButtonWrapper.astro";
+import Button from "@/components/Button.astro";
+import Img from "@/components/media/Img.astro";
+
+type Props = Pick<ComponentProps<typeof Section>, "render"> & {
+  /** Heading text. */
+  heading: string;
+  /** Background image. */
+  image: ImageMetadata;
+};
+
+const { render = true, heading, image, ...rest } = Astro.props;
+---
+
+<Section
+  render={render}
+  theme="dark"
+  paddingTop="navoverlap"
+  paddingBottom="large"
+  class="hero-home_wrap"
+  containerClass="hero-home_layout"
+  {...rest}
+>
+  <Img
+    slot="background"
+    src={image}
+    class="hero-home_image"
+    loading="eager"
+    fetchPriority="high"
+  />
+  <div slot="background" class="hero-home_scrim"></div>
+  <Heading tag="h1" class="hero-home_heading">{heading}</Heading>
+  <ButtonWrapper class="hero-home_actions" marginTop="0">
+    <Button element="link" href="/contact">Connect</Button>
+    <Button element="link" href="/projects" emphasis="secondary">
+      View Projects
+    </Button>
+  </ButtonWrapper>
+</Section>
+
+<style is:global>
+  @layer components {
+    .hero-home_wrap {
+      min-height: min(56.25rem, 100svh);
+      overflow: clip;
+
+      .hero-home_image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+      .hero-home_scrim {
+        background-image: linear-gradient(
+          to bottom,
+          color-mix(in lab, var(--dark-1000) 45%, transparent),
+          color-mix(in lab, var(--dark-1000) 25%, transparent) 40%,
+          color-mix(in lab, var(--dark-1000) 60%, transparent)
+        );
+      }
+      .hero-home_layout {
+        justify-content: flex-end;
+        flex-grow: 1;
+        gap: var(--space-8);
+      }
+      .hero-home_heading {
+        max-width: 48rem;
+      }
+    }
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+import type { ComponentProps, HTMLAttributes } from "astro/types";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+
+type EyebrowVariant = ComponentProps<typeof Eyebrow>["variant"];
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Small label above the title. */
+  eyebrow?: string;
+  /** Section title. */
+  title?: string;
+  /** Supporting paragraph, shown in the second column. */
+  subtitle?: string;
+  /** Heading level of the title. */
+  titleTag?: "h1" | "h2" | "h3" | "h4" | "h5" | "h6";
+  /** Eyebrow style. */
+  eyebrowVariant?: EyebrowVariant;
+}
+
+const {
+  render = true,
+  eyebrow,
+  title,
+  subtitle,
+  titleTag = "h2",
+  eyebrowVariant = "default",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasLead = !!eyebrow || !!title;
+---
+
+{
+  render && (hasLead || !!subtitle) && (
+    <div class:list={["intro_wrap", className]} {...rest}>
+      {hasLead && (
+        <div class="intro_lead">
+          <Eyebrow variant={eyebrowVariant}>{eyebrow}</Eyebrow>
+          <Heading tag={titleTag} maxWidth={30}>
+            {title}
+          </Heading>
+        </div>
+      )}
+      {!!subtitle && (
+        <div class="intro_detail">
+          <Paragraph variant="large" maxWidth={60}>
+            {subtitle}
+          </Paragraph>
+        </div>
+      )}
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .intro_wrap {
+      width: 100%;
+      display: grid;
+      column-gap: var(--site-gutter);
+      row-gap: var(--space-6);
+      align-items: end;
+
+      .intro_lead {
+        display: flex;
+        flex-direction: column;
+        align-items: var(--_alignment, start);
+        gap: var(--space-4);
+      }
+      @media (width >= 64rem) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+  }
+</style>

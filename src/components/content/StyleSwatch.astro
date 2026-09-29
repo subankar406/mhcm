@@ -1,0 +1,83 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Custom property name, without the leading dashes. */
+  token: string;
+}
+
+const { render = true, token, class: className, ...rest } = Astro.props;
+---
+
+{
+  render && token && (
+    <div class:list={["swatch_wrap", className]} {...rest}>
+      <div class="swatch_frame">
+        <div class="swatch_chip" style={`--_color: var(--${token});`} />
+      </div>
+      <p class="swatch_name text-style-small">--{token}</p>
+      <p class="swatch_value text-style-small" />
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .swatch_wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-1);
+      text-align: start;
+
+      .swatch_frame {
+        aspect-ratio: 3 / 2;
+        border: var(--border-width) solid var(--border);
+        border-radius: var(--radius-small);
+        background-image: repeating-conic-gradient(
+          var(--background-skeleton) 0% 25%,
+          transparent 0% 50%
+        );
+        background-size: 1rem 1rem;
+        overflow: clip;
+      }
+      .swatch_chip {
+        width: 100%;
+        height: 100%;
+        background-color: var(--_color);
+      }
+      .swatch_value {
+        color: var(--text-2);
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+</style>
+
+<script>
+  /* Canvas resolves any computed color — lab(), color(srgb …) — to rgba. */
+  const canvas = document.createElement("canvas");
+  canvas.width = 1;
+  canvas.height = 1;
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+
+  const format = (value: string) => {
+    if (!context) return value;
+    context.clearRect(0, 0, 1, 1);
+    context.fillStyle = value;
+    context.fillRect(0, 0, 1, 1);
+    const [r, g, b, a] = context.getImageData(0, 0, 1, 1).data;
+    if (a === 0) return "transparent";
+    const hex = `#${[r, g, b].map((n) => n.toString(16).padStart(2, "0")).join("")}`;
+    return a === 255 ? hex : `${hex} · ${Math.round((a / 255) * 100)}%`;
+  };
+
+  for (const swatch of document.querySelectorAll(".swatch_wrap")) {
+    const chip = swatch.querySelector(".swatch_chip");
+    const value = swatch.querySelector(".swatch_value");
+    if (!chip || !value) continue;
+    value.textContent = format(getComputedStyle(chip).backgroundColor);
+  }
+</script>

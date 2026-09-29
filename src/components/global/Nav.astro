@@ -1,7 +1,7 @@
 ---
-import Icon from "@/components/media/Icon.astro";
+import Img from "@/components/media/Img.astro";
 import NavLink from "@/components/global/NavLink.astro";
-import logo from "@/assets/logo/logo.svg";
+import logo from "@/assets/logo/mhcm-logo.png";
 import { SITE_NAME } from "@/consts.ts";
 
 interface Props {
@@ -19,7 +19,14 @@ const { render = true, overlap = false } = Astro.props;
     <header class:list={["nav_wrap", overlap && "overlap"]}>
       <div class="nav_inner">
         <a class="nav_logo" href="/" aria-label={SITE_NAME}>
-          <Icon src={logo} variant="full-width" />
+          <Img
+            src={logo}
+            variant="densities"
+            width={176}
+            transparent={true}
+            loading="eager"
+            fetchPriority="high"
+          />
         </a>
         <button
           class="nav_toggle"
@@ -33,8 +40,13 @@ const { render = true, overlap = false } = Astro.props;
         <nav class="nav_menu" id="nav-menu" aria-label="Main">
           <div class="nav_menu_inner">
             <ul class="nav_links">
-              <NavLink href="/">Home</NavLink>
-              <NavLink href="/example-components">Example Components</NavLink>
+              <NavLink href="/services">Services</NavLink>
+              <NavLink href="/industries">Industries</NavLink>
+              <NavLink href="/projects">Projects</NavLink>
+              <NavLink href="/about">About</NavLink>
+              <NavLink href="/careers">Careers</NavLink>
+              <NavLink href="/resources">Resources</NavLink>
+              <NavLink href="/contact">Contact</NavLink>
             </ul>
           </div>
         </nav>
@@ -91,7 +103,7 @@ const { render = true, overlap = false } = Astro.props;
     });
 
     window
-      .matchMedia("(width >= 48rem)")
+      .matchMedia("(width >= 64rem)")
       .addEventListener("change", (event) => {
         if (event.matches) setOpen(false);
       });
@@ -107,9 +119,9 @@ const { render = true, overlap = false } = Astro.props;
       display: flex;
       justify-content: center;
       padding-inline: var(--site-margin);
-      background-color: var(--background);
-      color: var(--text);
-      border-bottom: var(--border-width) solid var(--border);
+      background-color: var(--nav-background);
+      backdrop-filter: blur(var(--nav-blur));
+      color: var(--nav-text);
 
       &.overlap {
         position: fixed;
@@ -135,11 +147,11 @@ const { render = true, overlap = false } = Astro.props;
     .nav_logo {
       display: flex;
       align-items: center;
-      width: 6.5rem;
+      width: 11rem;
       transition: opacity var(--hover-duration) var(--hover-ease);
       @media (hover: hover) {
         &:hover {
-          opacity: 0.6;
+          opacity: 0.7;
         }
       }
     }
@@ -157,7 +169,7 @@ const { render = true, overlap = false } = Astro.props;
       transition: opacity var(--hover-duration) var(--hover-ease);
       @media (hover: hover) {
         &:hover {
-          opacity: 0.6;
+          opacity: 0.7;
         }
       }
     }
@@ -204,8 +216,8 @@ const { render = true, overlap = false } = Astro.props;
       overflow-x: clip;
       overflow-y: auto;
       overscroll-behavior: contain;
-      background-color: var(--background);
-      border-bottom: var(--border-width) solid var(--border);
+      background-color: var(--nav-background);
+      backdrop-filter: blur(var(--nav-blur));
       transition:
         grid-template-rows var(--open-duration) var(--open-ease),
         visibility var(--open-duration) var(--open-ease);
@@ -232,31 +244,33 @@ const { render = true, overlap = false } = Astro.props;
       flex-direction: column;
       padding: var(--space-2) var(--site-margin) var(--space-4);
       font-size: var(--text-main);
-      font-weight: var(--primary-medium);
+      font-weight: var(--primary-regular);
+      line-height: var(--line-height-large);
       & > li + li {
-        border-top: var(--border-width) solid var(--border);
+        border-top: var(--border-width) solid
+          color-mix(in lab, currentcolor 20%, transparent);
       }
     }
 
     .nav_link {
       display: block;
       padding-block: var(--space-3);
-      color: color-mix(in lab, currentcolor 60%, transparent);
+      color: var(--nav-text);
       text-decoration: none;
       text-underline-offset: 0.4em;
       text-decoration-thickness: var(--border-width);
       transition: color var(--hover-duration) var(--hover-ease);
       &[aria-current="page"] {
-        color: var(--text);
+        text-decoration: underline;
       }
       @media (hover: hover) {
         &:hover {
-          color: var(--text);
+          color: var(--nav-text-hover);
         }
       }
     }
 
-    @media (width >= 48rem) {
+    @media (width >= 64rem) {
       .nav_toggle {
         display: none;
       }
@@ -266,7 +280,7 @@ const { render = true, overlap = false } = Astro.props;
         display: block;
         visibility: visible;
         background-color: transparent;
-        border-bottom: 0;
+        backdrop-filter: none;
       }
 
       .nav_menu_inner {
@@ -279,8 +293,7 @@ const { render = true, overlap = false } = Astro.props;
         flex-wrap: wrap;
         align-items: center;
         padding: 0;
-        gap: var(--space-4);
-        font-size: var(--text-small);
+        margin-right: calc(var(--space-4) * -1);
         & > li + li {
           border-top: 0;
         }
@@ -288,9 +301,7 @@ const { render = true, overlap = false } = Astro.props;
 
       .nav_link {
         padding-block: 0;
-        &[aria-current="page"] {
-          text-decoration: underline;
-        }
+        padding-inline: var(--space-4);
       }
     }
   }

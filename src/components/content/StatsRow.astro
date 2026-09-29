@@ -1,0 +1,129 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Paragraph from "@/components/typography/Paragraph.astro";
+
+type Stat = {
+  /** Figure to count up to. */
+  number: number;
+  /** Symbol shown straight after the figure, e.g. `+` or `%`. */
+  unit?: string;
+  /** What the figure counts. */
+  details: string;
+};
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** First figure. */
+  stat1?: Stat;
+  /** Second figure. */
+  stat2?: Stat;
+  /** Third figure. */
+  stat3?: Stat;
+  /** Fourth figure. */
+  stat4?: Stat;
+  /** Fifth figure. */
+  stat5?: Stat;
+  /**
+   * Count-up time in milliseconds, shared by every figure.
+   *
+   * @min 0
+   * @int
+   */
+  duration?: number;
+}
+
+const {
+  render = true,
+  stat1,
+  stat2,
+  stat3,
+  stat4,
+  stat5,
+  duration = 5000,
+  class: className,
+  ...rest
+} = Astro.props;
+
+const stats = [stat1, stat2, stat3, stat4, stat5].filter(
+  (stat): stat is Stat => !!stat,
+);
+---
+
+{
+  render && stats.length > 0 && (
+    <div class:list={["stats-row_wrap", className]} {...rest}>
+      {stats.map((stat) => (
+        <div class="stats-row_item">
+          <Paragraph variant="display" class="stats-row_value">
+            <span class="stats-row_figure">
+              <span
+                class="stats-row_number"
+                fs-numbercount-element="number"
+                fs-numbercount-start="0"
+                fs-numbercount-end={stat.number}
+                fs-numbercount-duration={duration}
+              >
+                {stat.number}
+              </span>
+              <span class="stats-row_unit">{stat.unit}</span>
+            </span>
+          </Paragraph>
+          <Paragraph variant="large" class="stats-row_label">
+            {stat.details}
+          </Paragraph>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+{/*
+  Attributes by Finsweet — Number Count. The module registers itself but only
+  auto-starts when its tag sits in the document head at parse time, which a
+  component cannot do on its own. Calling `init()` on load is its public API,
+  and keeps this component self-contained.
+*/}
+<script
+  is:inline
+  defer
+  src="https://cdn.jsdelivr.net/npm/@finsweet/attributes-numbercount@1/numbercount.js"
+></script>
+<script is:inline>
+  (() => {
+    const start = () => window.fsAttributes?.numbercount?.init?.();
+    if (document.readyState === "complete") start();
+    else addEventListener("load", start, { once: true });
+  })();
+</script>
+
+<style is:global>
+  @layer components {
+    .stats-row_wrap {
+      width: 100%;
+      display: flex;
+      flex-flow: wrap;
+
+      .stats-row_item {
+        flex: 1 1 auto;
+        min-width: max-content;
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-4);
+        padding: var(--section-space-medium) var(--space-6);
+      }
+      .stats-row_value {
+        white-space: nowrap;
+      }
+      /* Flex so the markup can breathe without a gap opening up between
+         the counted figure and its unit. */
+      .stats-row_figure {
+        display: inline-flex;
+        align-items: baseline;
+      }
+      .stats-row_label {
+        color: var(--text);
+      }
+    }
+  }
+</style>

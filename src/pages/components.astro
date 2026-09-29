@@ -1,0 +1,149 @@
+---
+import Layout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import ContentWrapper from "@/components/wrapper/ContentWrapper.astro";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import Grid from "@/components/wrapper/Grid.astro";
+import ComponentPreview from "@/components/content/ComponentPreview.astro";
+import StylePanel from "@/components/content/StylePanel.astro";
+import Intro from "@/components/content/Intro.astro";
+import Closing from "@/components/content/Closing.astro";
+---
+
+<Layout
+  title="Components"
+  description="Every sitewide component, with the props and states it ships."
+  theme="dark"
+>
+  <!-- intro -->
+  <Section paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Phase 2</Eyebrow>
+      <Heading tag="h1" variant="h2">Components</Heading>
+      <Paragraph maxWidth={60}>
+        Sitewide components — the ones that appear on every page rather than
+        inside a single section. Each is the live component, not a picture of
+        one.
+      </Paragraph>
+    </ContentWrapper>
+  </Section>
+  <!-- nav -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Global</Eyebrow>
+      <Heading tag="h2" variant="h3">Nav</Heading>
+      <Paragraph maxWidth={60}>
+        A translucent bar over the page: black at 20% with a 5px backdrop blur,
+        88px tall, logo left and links right. It sits at the top of this page
+        too — that bar is the component.
+      </Paragraph>
+    </ContentWrapper>
+    <Grid variant="columns" large={2}>
+      <StylePanel label="overlap · desktop">
+        <ComponentPreview
+          src="/"
+          title="Nav over the homepage hero"
+          height={20}
+        />
+      </StylePanel>
+      <StylePanel label="overlap · mobile">
+        <ComponentPreview
+          src="/"
+          title="Nav on a narrow viewport"
+          variant="mobile"
+          height={20}
+        />
+      </StylePanel>
+    </Grid>
+    <ContentWrapper>
+      <Paragraph variant="small" maxWidth={70}>
+        <strong>render</strong> — set to <code>false</code> to omit.
+        <strong>overlap</strong> — fixes the bar over the page so the first section
+        starts underneath it; that section takes
+        <code>paddingTop="navoverlap"</code> to clear it. Left off, the bar sticks
+        in flow instead.
+      </Paragraph>
+    </ContentWrapper>
+  </Section>
+  <!-- eyebrow -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Typography</Eyebrow>
+      <Heading tag="h2" variant="h3">Eyebrow</Heading>
+      <Paragraph maxWidth={60}>
+        Quicksand semibold, uppercase. <code>default</code> takes its color from the
+        theme; the rest name a swatch directly.
+      </Paragraph>
+    </ContentWrapper>
+    <StylePanel theme="dark" label="variants">
+      <Grid variant="autofit" minColumnWidth={14}>
+        <Eyebrow variant="default">Default</Eyebrow>
+        <Eyebrow variant="gray">Gray</Eyebrow>
+        <Eyebrow variant="whitesmoke">Whitesmoke</Eyebrow>
+        <Eyebrow variant="whitesmoke-wide">Whitesmoke wide</Eyebrow>
+        <Eyebrow variant="white">White</Eyebrow>
+      </Grid>
+    </StylePanel>
+  </Section>
+  <!-- intro -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Content</Eyebrow>
+      <Heading tag="h2" variant="h3">Intro</Heading>
+      <Paragraph maxWidth={60}>
+        Eyebrow and title on the left, supporting paragraph on the right. The
+        second column only appears when <code>subtitle</code> is set, and the whole
+        block disappears when all three props are empty.
+      </Paragraph>
+    </ContentWrapper>
+    <StylePanel theme="dark" label="eyebrow + title + subtitle">
+      <Intro
+        eyebrow="Work"
+        title="Projects That Reflect Our Commitment to Quality"
+        subtitle="With a subtitle set, the second column appears alongside the title."
+        eyebrowVariant="whitesmoke"
+      />
+    </StylePanel>
+    <StylePanel theme="dark" label="eyebrow + title only">
+      <Intro eyebrow="Work" title="No subtitle, so no second column" />
+    </StylePanel>
+  </Section>
+  <!-- closing -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Content</Eyebrow>
+      <Heading tag="h2" variant="h3">Closing</Heading>
+      <Paragraph maxWidth={60}>
+        Paragraph left, buttons right. Each button is omitted when its label is
+        empty; the secondary is empty by default, so only the primary shows.
+      </Paragraph>
+    </ContentWrapper>
+    <StylePanel theme="dark" label="default — primary only">
+      <Closing
+        text="The primary button defaults to Connect, pointing at the contact page."
+      />
+    </StylePanel>
+    <StylePanel theme="dark" label="both buttons">
+      <Closing
+        text="Setting a secondary label brings the second button into the group."
+        primaryLabel="View Projects"
+        primaryHref="/projects"
+        secondaryLabel="Connect"
+        secondaryHref="/contact"
+      />
+    </StylePanel>
+  </Section>
+  <!-- footer -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Global</Eyebrow>
+      <Heading tag="h2" variant="h3">Footer</Heading>
+      <Paragraph maxWidth={60}>
+        Still the Lumos default — it has not been rebuilt against the design
+        yet. The one at the bottom of this page is the live component.
+      </Paragraph>
+    </ContentWrapper>
+  </Section>
+</Layout>

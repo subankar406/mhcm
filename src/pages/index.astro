@@ -1,41 +1,48 @@
 ---
+import { getCollection } from "astro:content";
 import Layout from "@/layouts/BaseLayout.astro";
 import Section from "@/components/wrapper/Section.astro";
-import Heading from "@/components/typography/Heading.astro";
-import Eyebrow from "@/components/typography/Eyebrow.astro";
-import Img from "@/components/media/Img.astro";
-import lumos_background from "@/assets/graphics/lumos-background.svg";
-import Icon from "@/components/media/Icon.astro";
-import logo_icon from "@/assets/logo/logo-icon.svg";
-import ContentWrapper from "@/components/wrapper/ContentWrapper.astro";
+import HeroHome from "@/components/section/HeroHome.astro";
+import ProjectsHome from "@/components/section/ProjectsHome.astro";
+import StatsRow from "@/components/content/StatsRow.astro";
+import heroImage from "@/assets/home/hero-home.png";
+
+const stats = {
+  stat1: { number: 25, unit: "+", details: "Years in Business" },
+  stat2: { number: 300, unit: "+", details: "Projects Completed" },
+  stat3: { number: 8, details: "Counties Served" },
+  stat4: { number: 6, details: "Industries Served" },
+  stat5: { number: 100, unit: "%", details: "Self-perform Site Division" },
+};
+
+const projects = (await getCollection("projects"))
+  .sort((a, b) => a.data.order - b.data.order)
+  .map((project) => ({
+    title: project.data.title,
+    location: project.data.location,
+    image: project.data.mainImage,
+    href: `/project/${project.id}`,
+  }));
 ---
 
-<Layout theme="dark">
-  <Section
-    paddingBottom="even"
-    containerClass="flex-grow"
-    paddingTop="even"
-    class="flex-grow"
-    style="min-height: calc(100svh - var(--nav-height));"
-  >
-    <ContentWrapper
-      class="flex-grow theme-brand"
-      variant="card"
-      mediaOpacity={100}
-    >
-      <Icon src={logo_icon} variant="large" />
-      <Heading variant="display" tag="h1" class="margin-block-8"
-        >Style Guide</Heading
-      >
-      <Eyebrow variant="tag">v0.0.4</Eyebrow>
-      <Img
-        slot="column2"
-        src={lumos_background}
-        width={1920}
-        height={1080}
-        loading="eager"
-        fetchPriority="high"
-      />
-    </ContentWrapper>
+<Layout
+  title="Home"
+  description="Mid Hudson Construction Management provides construction management, general contracting, sitework, and pre-construction services throughout New York's Hudson Valley."
+  overlap={true}
+>
+  <!-- hero -->
+  <HeroHome
+    heading="Building Better Projects Through Planning, Communication, and Execution."
+    image={heroImage}
+  />
+  <!-- stats -->
+  <Section paddingTop="none" paddingBottom="none">
+    <StatsRow {...stats} />
   </Section>
+  <!-- projects -->
+  <ProjectsHome
+    heading="Projects That Reflect Our Commitment to Quality"
+    text="From healthcare and education facilities to municipal infrastructure and commercial developments, MHCM delivers projects that strengthen communities and create lasting value."
+    projects={projects}
+  />
 </Layout>

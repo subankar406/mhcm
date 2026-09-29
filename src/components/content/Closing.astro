@@ -1,0 +1,90 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import ButtonWrapper from "@/components/wrapper/ButtonWrapper.astro";
+import Button from "@/components/Button.astro";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Closing paragraph, shown in the first column. */
+  text?: string;
+  /** Primary button label. Leave empty to omit the button. */
+  primaryLabel?: string;
+  /** Primary button destination. */
+  primaryHref?: string;
+  /** Secondary button label. Leave empty to omit the button. */
+  secondaryLabel?: string;
+  /** Secondary button destination. */
+  secondaryHref?: string;
+}
+
+const {
+  render = true,
+  text,
+  primaryLabel = "Connect",
+  primaryHref = "/contact",
+  secondaryLabel,
+  secondaryHref = "#",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const hasActions = !!primaryLabel || !!secondaryLabel;
+---
+
+{
+  render && (!!text || hasActions) && (
+    <div class:list={["closing_wrap", className]} {...rest}>
+      {!!text && (
+        <div class="closing_detail">
+          <Paragraph maxWidth={60}>{text}</Paragraph>
+        </div>
+      )}
+      {hasActions && (
+        <ButtonWrapper class="closing_actions" marginTop="0">
+          <Button
+            render={!!primaryLabel}
+            element="link"
+            href={primaryHref}
+            data-testid="closing-primary"
+          >
+            {primaryLabel}
+          </Button>
+          <Button
+            render={!!secondaryLabel}
+            element="link"
+            href={secondaryHref}
+            emphasis="secondary"
+            data-testid="closing-secondary"
+          >
+            {secondaryLabel}
+          </Button>
+        </ButtonWrapper>
+      )}
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .closing_wrap {
+      width: 100%;
+      display: grid;
+      column-gap: var(--site-gutter);
+      row-gap: var(--space-6);
+      align-items: center;
+
+      .closing_actions {
+        justify-content: var(--_alignment, start);
+      }
+      @media (width >= 64rem) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        .closing_actions {
+          justify-content: end;
+        }
+      }
+    }
+  }
+</style>

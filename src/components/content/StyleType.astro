@@ -1,0 +1,110 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+type TypeStyle =
+  | "display"
+  | "h1"
+  | "h2"
+  | "h3"
+  | "h4"
+  | "h5"
+  | "h6"
+  | "large"
+  | "main"
+  | "small";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Type style. */
+  variant: TypeStyle;
+}
+
+const { render = true, variant, class: className, ...rest } = Astro.props;
+
+const token =
+  variant === "display"
+    ? "display"
+    : variant.startsWith("h")
+      ? variant
+      : `text-${variant}`;
+---
+
+{
+  render && variant && (
+    <div
+      class:list={["type-style_wrap", className]}
+      data-token={token}
+      {...rest}
+    >
+      <div class="type-style_meta">
+        <p class="type-style_name text-style-small">text-style-{variant}</p>
+        <p class="type-style_value text-style-small" />
+      </div>
+      <p class:list={["type-style_sample", `text-style-${variant}`]}>
+        Lumos design tokens
+      </p>
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .type-style_wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      padding-bottom: var(--space-5);
+      border-bottom: var(--border-width) solid var(--border);
+
+      .type-style_meta {
+        display: flex;
+        flex-flow: wrap;
+        align-items: baseline;
+        justify-content: space-between;
+        gap: var(--space-2);
+      }
+      .type-style_value {
+        color: var(--text-2);
+        font-variant-numeric: tabular-nums;
+      }
+      .type-style_sample {
+        width: 100%;
+        overflow-wrap: anywhere;
+      }
+    }
+  }
+</style>
+
+<script>
+  const root = getComputedStyle(document.documentElement);
+  const styles = document.querySelectorAll(".type-style_wrap");
+
+  const read = (token: string, part: string) =>
+    root.getPropertyValue(`--${token}-${part}`).trim();
+
+  const measure = () => {
+    for (const style of styles) {
+      const token = style.getAttribute("data-token");
+      const sample = style.querySelector(".type-style_sample");
+      const value = style.querySelector(".type-style_value");
+      if (!token || !sample || !value) continue;
+      const computed = getComputedStyle(sample);
+      const min = read(token, "min");
+      const max = read(token, "max");
+      value.textContent = [
+        `${Math.round(parseFloat(computed.fontSize) * 100) / 100}px`,
+        min && max ? `${min}–${max}px` : "",
+        computed.fontWeight,
+        `lh ${read(token, "line-height")}`,
+        `ls ${read(token, "letter-spacing")}`,
+      ]
+        .filter(Boolean)
+        .join(" · ");
+    }
+  };
+
+  measure();
+  addEventListener("resize", measure, { passive: true });
+</script>

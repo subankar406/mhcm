@@ -1,0 +1,63 @@
+---
+import type { HTMLAttributes } from "astro/types";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import { slotContent } from "@/utils/slots.ts";
+
+interface Props extends HTMLAttributes<"div"> {
+  /** Set to `false` to omit the component. */
+  render?: boolean;
+  /** Panel label. */
+  label?: string;
+  /** Color theme of element and its children. */
+  theme?: "inherit" | "light" | "dark" | "brand";
+}
+
+const {
+  render = true,
+  label,
+  theme = "inherit",
+  class: className,
+  ...rest
+} = Astro.props;
+
+const content = await slotContent(Astro.slots);
+---
+
+{
+  render && content && (
+    <div
+      class:list={[
+        "style-panel_wrap",
+        theme !== "inherit" && `theme-${theme}`,
+        className,
+      ]}
+      {...rest}
+    >
+      <Eyebrow variant="tag">{label}</Eyebrow>
+      <div class="style-panel_content">
+        <Fragment set:html={content} />
+      </div>
+    </div>
+  )
+}
+
+<style is:global>
+  @layer components {
+    .style-panel_wrap {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: start;
+      gap: var(--space-5);
+      padding: var(--space-5);
+      background-color: var(--background);
+      color: var(--text);
+      border: var(--border-width) solid var(--border);
+      border-radius: var(--radius-main);
+
+      .style-panel_content {
+        width: 100%;
+      }
+    }
+  }
+</style>

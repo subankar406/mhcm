@@ -1,0 +1,286 @@
+---
+import Layout from "@/layouts/BaseLayout.astro";
+import Section from "@/components/wrapper/Section.astro";
+import Heading from "@/components/typography/Heading.astro";
+import Paragraph from "@/components/typography/Paragraph.astro";
+import Eyebrow from "@/components/typography/Eyebrow.astro";
+import Img from "@/components/media/Img.astro";
+import lumos_background from "@/assets/graphics/lumos-background.svg";
+import Icon from "@/components/media/Icon.astro";
+import logo_icon from "@/assets/logo/logo-icon.svg";
+import ContentWrapper from "@/components/wrapper/ContentWrapper.astro";
+import Grid from "@/components/wrapper/Grid.astro";
+import ButtonWrapper from "@/components/wrapper/ButtonWrapper.astro";
+import Button from "@/components/Button.astro";
+import StylePanel from "@/components/content/StylePanel.astro";
+import StyleSwatch from "@/components/content/StyleSwatch.astro";
+import StyleScale from "@/components/content/StyleScale.astro";
+import StyleType from "@/components/content/StyleType.astro";
+import StyleRadius from "@/components/content/StyleRadius.astro";
+
+const themes = ["light", "dark", "brand"] as const;
+
+const palette = [
+  "light-100",
+  "light-200",
+  "light-300",
+  "dark-700",
+  "dark-800",
+  "dark-900",
+  "dark-1000",
+  "brand-500",
+  "brand-text",
+  "accent-500",
+  "accent-text",
+];
+
+const surfaces = [
+  "background",
+  "background-2",
+  "background-3",
+  "background-skeleton",
+  "text",
+  "text-2",
+  "border",
+  "heading-accent",
+  "selection-background",
+  "selection-text",
+  "nav-background",
+  "nav-text",
+];
+
+const buttonColors = [
+  "button-background",
+  "button-border",
+  "button-text",
+  "button-background-hover",
+  "button-border-hover",
+  "button-text-hover",
+  "button-2-background",
+  "button-2-border",
+  "button-2-text",
+  "button-2-background-hover",
+  "button-2-border-hover",
+  "button-2-text-hover",
+  "link-text",
+  "link-border",
+  "link-text-hover",
+  "link-border-hover",
+];
+
+const typeStyles = [
+  "display",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "large",
+  "main",
+  "small",
+] as const;
+
+const spaces = [
+  "space-1",
+  "space-2",
+  "space-3",
+  "space-4",
+  "space-5",
+  "space-6",
+  "space-7",
+  "space-8",
+];
+
+const sectionSpaces = [
+  "section-space-small",
+  "section-space-medium",
+  "section-space-large",
+  "section-space-nav-overlap",
+];
+
+const siteLayout = ["site-margin", "site-gutter", "site-width", "nav-height"];
+
+const widths = ["max-width-small", "max-width-main", "max-width-full"];
+
+const radii = ["radius-small", "radius-main", "radius-round"];
+---
+
+<Layout
+  title="Style Guide"
+  description="Every design token in the system: color, type, buttons, spacing, radius and container width."
+  theme="dark"
+>
+  <!-- hero -->
+  <Section
+    paddingBottom="even"
+    containerClass="flex-grow"
+    paddingTop="even"
+    class="flex-grow"
+    style="min-height: calc(100svh - var(--nav-height));"
+  >
+    <ContentWrapper
+      class="flex-grow theme-brand"
+      variant="card"
+      mediaOpacity={100}
+    >
+      <Icon src={logo_icon} variant="large" />
+      <Heading variant="display" tag="h1" class="margin-block-8"
+        >Style Guide</Heading
+      >
+      <Eyebrow variant="tag">Phase 1</Eyebrow>
+      <Img
+        slot="column2"
+        src={lumos_background}
+        width={1920}
+        height={1080}
+        loading="eager"
+        fetchPriority="high"
+      />
+    </ContentWrapper>
+  </Section>
+  <!-- palette -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Color</Eyebrow>
+      <Heading tag="h2" variant="h3">Swatches</Heading>
+      <Paragraph maxWidth={60}>
+        The raw palette. Every theme colour below is mixed from these, so a
+        rebrand starts and ends here.
+      </Paragraph>
+    </ContentWrapper>
+    <Grid variant="autofit" minColumnWidth={10}>
+      {palette.map((token) => <StyleSwatch token={token} />)}
+    </Grid>
+  </Section>
+  <!-- themes -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Color</Eyebrow>
+      <Heading tag="h2" variant="h3">Themes</Heading>
+      <Paragraph maxWidth={60}>
+        Each theme redefines the same token names, so a component takes its
+        colours from whichever theme wraps it.
+      </Paragraph>
+    </ContentWrapper>
+    {
+      themes.map((theme) => (
+        <StylePanel theme={theme} label={`theme-${theme}`}>
+          <Grid variant="autofit" minColumnWidth={9}>
+            {surfaces.map((token) => (
+              <StyleSwatch token={token} />
+            ))}
+          </Grid>
+        </StylePanel>
+      ))
+    }
+  </Section>
+  <!-- typography -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Typography</Eyebrow>
+      <Heading tag="h2" variant="h3">Font</Heading>
+      <Paragraph maxWidth={60}>
+        One family across the site, in three weights. Every size is fluid
+        between the 320px and 1440px viewport bounds.
+      </Paragraph>
+    </ContentWrapper>
+    <StylePanel label="--primary-family">
+      <Grid variant="autofit" minColumnWidth={14}>
+        <Paragraph variant="h5" class="weight-regular">Regular · 400</Paragraph>
+        <Paragraph variant="h5" class="weight-medium">Medium · 500</Paragraph>
+        <Paragraph variant="h5" class="weight-bold">Bold · 700</Paragraph>
+      </Grid>
+    </StylePanel>
+    {typeStyles.map((variant) => <StyleType variant={variant} />)}
+  </Section>
+  <!-- buttons -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Interactive</Eyebrow>
+      <Heading tag="h2" variant="h3">Buttons</Heading>
+      <Paragraph maxWidth={60}>
+        Hover any button to see the transition: colour moves over
+        <code>--hover-duration</code> on <code>--hover-ease</code>, and the link
+        variant wipes its underline in twice that. The last row is disabled.
+      </Paragraph>
+    </ContentWrapper>
+    {
+      themes.map((theme) => (
+        <StylePanel theme={theme} label={`theme-${theme}`}>
+          <ButtonWrapper marginTop="0">
+            <Button>Primary</Button>
+            <Button emphasis="secondary">Secondary</Button>
+            <Button variant="link" element="link" href="#">
+              Link
+            </Button>
+            <Button variant="arrow" />
+            <Button variant="arrow" direction="back" />
+            <Button variant="play" />
+            <Button variant="close" emphasis="secondary" />
+            <Button disabled>Disabled</Button>
+          </ButtonWrapper>
+        </StylePanel>
+      ))
+    }
+    <Grid variant="autofit" minColumnWidth={9}>
+      {buttonColors.map((token) => <StyleSwatch token={token} />)}
+    </Grid>
+  </Section>
+  <!-- spacing -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Spacing</Eyebrow>
+      <Heading tag="h2" variant="h3">Padding & margin</Heading>
+      <Paragraph maxWidth={60}>
+        One fluid scale feeds every <code>padding-*</code>, <code>margin-*</code
+        > and <code>gap-*</code> utility. Resize the window and these values move
+        with it.
+      </Paragraph>
+    </ContentWrapper>
+    <Grid variant="autofit" minColumnWidth={18}>
+      {spaces.map((token) => <StyleScale token={token} />)}
+    </Grid>
+  </Section>
+  <!-- section spacing -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Spacing</Eyebrow>
+      <Heading tag="h2" variant="h3">Section padding</Heading>
+      <Paragraph maxWidth={60}>
+        What <code>paddingTop</code> and <code>paddingBottom</code> on a
+        <code>Section</code> resolve to. <code>medium</code> is the default;
+        <code>navoverlap</code> clears a fixed nav.
+      </Paragraph>
+    </ContentWrapper>
+    {sectionSpaces.map((token) => <StyleScale token={token} />)}
+  </Section>
+  <!-- container -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Layout</Eyebrow>
+      <Heading tag="h2" variant="h3">Container</Heading>
+      <Paragraph maxWidth={60}>
+        The container is <code>--site-width</code> wide, capped at
+        <code>--max-width-main</code>, with <code>--site-gutter</code> between grid
+        columns.
+      </Paragraph>
+    </ContentWrapper>
+    {siteLayout.map((token) => <StyleScale token={token} />)}
+    {widths.map((token) => <StyleScale token={token} />)}
+  </Section>
+  <!-- radius -->
+  <Section paddingTop="small" paddingBottom="small">
+    <ContentWrapper>
+      <Eyebrow>Shape</Eyebrow>
+      <Heading tag="h2" variant="h3">Radius</Heading>
+      <Paragraph maxWidth={60}>
+        Three corner sizes. Buttons and fields set their own in
+        <code>em</code> so they track the font size.
+      </Paragraph>
+    </ContentWrapper>
+    <Grid variant="autofit" minColumnWidth={12}>
+      {radii.map((token) => <StyleRadius token={token} />)}
+    </Grid>
+  </Section>
+</Layout>

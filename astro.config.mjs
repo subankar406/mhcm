@@ -13,15 +13,29 @@ export default defineConfig({
   ],
   fonts: [
     {
-      name: "Inter",
-      cssVariable: "--font-inter",
+      name: "General Sans",
+      cssVariable: "--font-general-sans",
       provider: fontProviders.local(),
       options: {
         variants: [
           {
-            weight: 400,
+            weight: "200 700",
             style: "normal",
-            src: ["./src/assets/fonts/inter-regular.woff2"],
+            src: ["./src/assets/fonts/general-sans-variable.woff2"],
+          },
+        ],
+      },
+    },
+    {
+      name: "Quicksand",
+      cssVariable: "--font-quicksand",
+      provider: fontProviders.local(),
+      options: {
+        variants: [
+          {
+            weight: "300 700",
+            style: "normal",
+            src: ["./src/assets/fonts/quicksand-variable.ttf"],
           },
         ],
       },

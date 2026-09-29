@@ -1,0 +1,80 @@
+---
+import type { ComponentProps } from "astro/types";
+import Section from "@/components/wrapper/Section.astro";
+import Intro from "@/components/content/Intro.astro";
+import Closing from "@/components/content/Closing.astro";
+import Slider from "@/components/interactive/Slider.astro";
+import ProjectCard from "@/components/content/ProjectCard.astro";
+
+type Project = {
+  /** Project name. */
+  title: string;
+  /** Town and state. */
+  location: string;
+  /** Card image. */
+  image: ImageMetadata;
+  /** Project page. */
+  href: string;
+};
+
+type Props = Pick<ComponentProps<typeof Section>, "render"> & {
+  /** Section heading. */
+  heading: string;
+  /** Closing paragraph under the slider. */
+  text: string;
+  /** Projects to show, in order. */
+  projects: Project[];
+};
+
+const { render = true, heading, text, projects, ...rest } = Astro.props;
+---
+
+<Section
+  render={render && projects?.length > 0}
+  theme="dark"
+  paddingTop="medium"
+  paddingBottom="medium"
+  class="projects-home_wrap"
+  {...rest}
+>
+  <Intro eyebrow="Work" title={heading} eyebrowVariant="whitesmoke" />
+  <Slider
+    label="Projects"
+    variant="crop-start"
+    small={1.2}
+    medium={2}
+    large={2}
+  >
+    {
+      projects.map((project) => (
+        <ProjectCard
+          title={project.title}
+          location={project.location}
+          image={project.image}
+          href={project.href}
+        />
+      ))
+    }
+  </Slider>
+  <Closing text={text} primaryLabel="View Projects" primaryHref="/projects" />
+</Section>
+
+<style is:global>
+  @layer components {
+    .projects-home_wrap {
+      /* The design draws the slider arrows as orange squares, not the
+         round secondary buttons the slider ships with. */
+      .slider_steps .button_wrap.arrow {
+        --button-background: var(--accent-500);
+        --button-text: var(--accent-text);
+        --button-border: var(--accent-500);
+        --button-background-hover: var(--accent-600);
+        --button-text-hover: var(--accent-text);
+        --button-border-hover: var(--accent-600);
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 0;
+      }
+    }
+  }
+</style>
